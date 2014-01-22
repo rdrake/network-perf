@@ -29,7 +29,7 @@ def ping(host):
 
 def download(url):
     d = Download()
-    t = d.time(host)
+    t = d.time(url)
     cur.execute("INSERT INTO entries VALUES (?, ?, ?, ?)", (datetime.datetime.now(), "DOWN", url, str(t)))
     conn.commit()
 
