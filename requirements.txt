@@ -1,0 +1,5 @@
+APScheduler==2.1.2
+Twisted==13.2.0
+billiard==3.3.0.14
+requests==2.2.0
+wsgiref==0.1.2
