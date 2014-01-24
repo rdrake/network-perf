@@ -16,7 +16,7 @@ conn = sqlite3.connect("results.db", check_same_thread=False)
 cur = conn.cursor()
 
 cur.execute("DROP TABLE IF EXISTS entries");
-cur.execute("CREATE TABLE entries (timestamp DATE, action TEXT, target TEXT, duration FLOAT)")
+cur.execute("CREATE TABLE entries (event_time TIMESTAMP, action TEXT, target TEXT, duration FLOAT)")
 
 sched = Scheduler(standalone=True, coalesce=True)
 sched.add_jobstore(ShelveJobStore("jobs.shelve"), "file")
