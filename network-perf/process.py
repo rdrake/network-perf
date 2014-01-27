@@ -1,35 +1,35 @@
 import datetime, sqlite3, time
 
-from matplotlib import pyplot as plt
-import matplotlib
+import matplotlib.dates as dates
+import matplotlib.pyplot as plt
 
-#from thrush import rrd
-#
-#RRD_FILE = "results.rrd"
+import pandas
+import pandas.io.sql as psql
 
 conn = sqlite3.connect("results.db", detect_types=sqlite3.PARSE_DECLTYPES)
 conn.row_factory=sqlite3.Row
-cur = conn.cursor()
 
-#class SLNRRD(rrd.RRD):
-#    duration = rrd.Gauge(heartbeat=60)
-#
-#slnrrd = SLNRRD(RRD_FILE)
-#
-#if not slnrrd.exists():
-#    slnrrd.create()
+df = psql.read_frame("SELECT event_time, action, target, duration FROM entries", con=conn)#, index_col="event_time")
 
-datetimes = []
-values = []
+df.sort(["action", "target", "event_time"], inplace=True)
 
-for row in cur.execute("SELECT event_time, action, target, duration FROM entries"):
-    if row["action"] == "DOWN" and row["target"] == "http://rdrake.org:9001/data.bin":
-        datetimes.append(row["event_time"])
-        values.append(row["duration"])
+grouped = df.groupby(["action", "target"])
 
-dates = matplotlib.dates.date2num(datetimes)
-plt.plot_date(dates, values, xdate=True, ls="-")
-plt.xlabel("Time")
-plt.ylabel("Latency (ms)")
+for (k, grp) in grouped:
+    (action, target) = (k[0], k[1])
+
+    if action == "PING":
+        ylabel = "Latency"
+    elif action == "DOWN":
+        ylabel = "Duration"
+
+    fig = plt.figure(action)
+
+    ax = grp.plot(x="event_time", y="duration", label=target)
+
+    ax.set_xlabel("Timestamp")
+    ax.set_ylabel("{} (ms)".format(ylabel))
+    ax.legend(loc="best")
+    ax.xaxis.set_major_formatter(dates.DateFormatter("%b %d\n%H:%M:%S"))
+
 plt.show()
-    #slnrrd.update(time.mktime(row["event_time"].timetuple()), duration=row["duration"])
