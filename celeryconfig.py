@@ -16,12 +16,12 @@ CELERYBEAT_SCHEDULE = {
     },
     "download-sln": {
         "task": "tasks.download",
-        "schedule": crontab(minute="0,30"),
+        "schedule": crontab(minute="0,15,30,45"),
         "args": ("http://leda.science.uoit.ca:9001/data.bin",)
     },
     "download-ext": {
         "task": "tasks.download",
-        "schedule": crontab(minute="1,31"),
+        "schedule": crontab(minute="1,16,31,46"),
         "args": ("http://rdrake.org:9001/data.bin",)
     }
 }
