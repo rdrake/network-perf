@@ -19,5 +19,5 @@ def ping(host):
 
 @app.task
 def download(url):
-    d = Download(url)
+    d = Download()
     return (d.time(url), whoami, url)
